@@ -67,6 +67,27 @@ Admin Panel → Settings → Web Search
 3. External Web Search URL = `http://<proxy-host>:8000/search`
 4. External Web Search API Key = `PROXY_KEY` 값
 
+## Claude Code / MCP (웹서치 도구로)
+
+서드파티 백엔드(Synthetic 등)의 Claude Code에선 내장 WebSearch가 안 뜬다
+(Anthropic 서버사이드 `web_search_*`에 하드코딩 → 백엔드 교체 불가). 이때 이 프록시를
+**MCP `web_search` 도구**로 붙이면 검색이 부활한다. MCP는 클라이언트사이드라 LLM 백엔드 무관.
+
+같은 GHCR 이미지를 stdio로 실행 — 각자 본인 키 사용:
+
+```bash
+claude mcp add synthetic-search \
+  -e SYNTHETIC_API_KEY=$SYNTHETIC_API_KEY \
+  -- docker run -i --rm -e SYNTHETIC_API_KEY \
+       ghcr.io/preinpost/synthetic-search-proxy:latest python -m app.mcp_server
+```
+
+- 로컬(레포 클론): `... -- uv run --directory /path/to/repo python -m app.mcp_server`
+- HTTP 모드(팀 공유): 컨테이너를 `MCP_TRANSPORT=http MCP_PORT=9000`으로 띄우고
+  `claude mcp add --transport http synthetic-search http://<host>:9000/mcp`
+
+도구: `web_search(query, max_results=5)` → 제목·URL·스니펫(`SNIPPET_MAX_CHARS`로 절단). 전문은 클라이언트 fetch로.
+
 ## 빌드 / 배포 (자동 version bump)
 
 `.github/workflows/docker-build.yml` 가 멀티아치(amd64/arm64) 이미지를
