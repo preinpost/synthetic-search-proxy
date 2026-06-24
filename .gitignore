@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.venv/
+venv/
+.idea/
+.vscode/
+# keep uv.lock tracked; ignore uv's local python install cache only
