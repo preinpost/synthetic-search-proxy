@@ -31,8 +31,9 @@ docker run -d --name search-proxy -p 8000:8000 \
 ### docker compose
 
 ```bash
-cp .env.example .env   # 값 채우기
-docker compose up -d
+cp .env.example .env            # 값 채우기
+docker compose up -d            # 독립 실행 (compose.yaml)
+docker compose -f compose.webui.yaml up -d   # Open WebUI 동반 실행
 ```
 
 ### 로컬 (개발, uv)

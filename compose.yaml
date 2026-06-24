@@ -1,0 +1,13 @@
+# Standalone: run only the search proxy (published GHCR image).
+#   docker compose up -d
+# Needs a .env file next to this one with SYNTHETIC_API_KEY and PROXY_KEY.
+services:
+  search-proxy:
+    image: ghcr.io/preinpost/synthetic-search-proxy:latest
+    container_name: synthetic-search-proxy
+    ports:
+      - "8000:8000"
+    environment:
+      SYNTHETIC_API_KEY: ${SYNTHETIC_API_KEY:?set SYNTHETIC_API_KEY in .env}
+      PROXY_KEY: ${PROXY_KEY:?set PROXY_KEY in .env}
+    restart: unless-stopped

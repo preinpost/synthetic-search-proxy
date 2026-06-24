@@ -11,3 +11,4 @@ venv/
 .idea/
 .vscode/
 docker-compose.yml
+compose*.yaml

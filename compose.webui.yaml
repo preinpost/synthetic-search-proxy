@@ -1,0 +1,31 @@
+# Proxy + Open WebUI together.
+#   docker compose -f compose.webui.yaml up -d
+# Open WebUI reaches the proxy by service name on the internal network,
+# and is pre-configured to use it as the External web search engine.
+# Needs a .env with SYNTHETIC_API_KEY and PROXY_KEY.
+services:
+  search-proxy:
+    image: ghcr.io/preinpost/synthetic-search-proxy:latest
+    restart: unless-stopped
+    environment:
+      SYNTHETIC_API_KEY: ${SYNTHETIC_API_KEY:?set SYNTHETIC_API_KEY in .env}
+      PROXY_KEY: ${PROXY_KEY:?set PROXY_KEY in .env}
+    # No host port: only Open WebUI talks to it over the compose network.
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    depends_on:
+      - search-proxy
+    ports:
+      - "3000:8080"
+    environment:
+      ENABLE_WEB_SEARCH: "true"
+      WEB_SEARCH_ENGINE: "external"
+      EXTERNAL_WEB_SEARCH_URL: "http://search-proxy:8000/search"
+      EXTERNAL_WEB_SEARCH_API_KEY: ${PROXY_KEY:?set PROXY_KEY in .env}
+    volumes:
+      - open-webui:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  open-webui:
