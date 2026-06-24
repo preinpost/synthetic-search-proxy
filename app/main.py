@@ -29,6 +29,10 @@ SYNTHETIC_URL = os.environ.get(
 # Leave empty to disable inbound auth.
 PROXY_KEY = os.environ.get("PROXY_KEY", "")
 REQUEST_TIMEOUT = float(os.environ.get("REQUEST_TIMEOUT", "20"))
+# Synthetic returns full page text in `text`; forwarding it whole bloats the
+# search response (~1MB), which overflows the model request in agentic mode.
+# Truncate each snippet; the model can fetch_url for full content. 0 = no limit.
+SNIPPET_MAX_CHARS = int(os.environ.get("SNIPPET_MAX_CHARS", "2000"))
 
 if not SYNTHETIC_API_KEY:
     log.warning("SYNTHETIC_API_KEY is not set; upstream calls will fail (401).")
@@ -83,11 +87,14 @@ async def search(
         url = item.get("url")
         if not url:
             continue
+        snippet = item.get("text") or ""
+        if SNIPPET_MAX_CHARS > 0:
+            snippet = snippet[:SNIPPET_MAX_CHARS]
         out.append(
             SearchResult(
                 link=url,
                 title=item.get("title") or url,
-                snippet=item.get("text") or "",
+                snippet=snippet,
             )
         )
 
