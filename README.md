@@ -54,6 +54,7 @@ SYNTHETIC_API_KEY=sk-... PROXY_KEY=my-secret \
 | `PROXY_KEY` | | (빈값=인증 끔) | Open WebUI가 보낼 Bearer 토큰 |
 | `SYNTHETIC_URL` | | `https://api.synthetic.new/v2/search` | 업스트림 URL |
 | `REQUEST_TIMEOUT` | | `20` | 업스트림 타임아웃(초) |
+| `SNIPPET_MAX_CHARS` | | `2000` | snippet당 최대 글자수(0=무제한). Synthetic이 `text`에 페이지 본문 전체를 주므로 잘라서 응답 비대화 방지 |
 | `PORT` | | `8000` | 리슨 포트 |
 | `LOG_LEVEL` | | `INFO` | 로그 레벨 |
 
